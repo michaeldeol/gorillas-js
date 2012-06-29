@@ -1,0 +1,59 @@
+body {
+  background-color: aliceblue;
+  margin: 0;
+  padding: 0;
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: courier;
+}
+
+#container {
+  width: 650px;
+  height: 360px;
+  margin: 100px auto;
+  position: relative;
+  border-radius: 10px;
+  background: #000;
+}
+
+.players {
+  position: absolute;
+  padding: 10px;
+  width: 630px;
+}
+
+#player_1 {
+  text-align: left;
+  float: left;
+  width: 300px;
+}
+
+#player_2 {
+  text-align: right;
+  float: right;
+  width: 135px;
+}
+
+label, input {
+  float: left;
+}
+
+label {
+  margin-right: 5px;
+  clear: left;
+}
+
+input {
+  background: #0000a0;
+  width: 50px;
+  border: none;
+  color: #fff;
+}
+
+#canvas {
+  background-color: #0000a0;
+  margin: 0 auto;
+  border: 5px solid #000;
+  border-radius: 15px;
+}
