@@ -4,7 +4,7 @@
       APP_HEIGHT  = 350;
 
 
-  var Gorilla, Banana, Building, Sun, App, Shape;
+  var Gorilla, Banana, Building, Sun, Wind, App, Shape;
 
   Shape = (function () {
 
@@ -127,6 +127,47 @@
     };
 
     return Sun;
+
+  }());
+
+  // TODO: I believe the wind is going "backwards"
+  // meaning, its faster to throw it againts the arrow direction
+  // this needs to be looked into and fixed
+  Wind = (function () {
+
+    function Wind ( context ) {
+      this.context = context;
+      this.windSpeed = Math.floor( Math.random() * 10 - 5 );
+      if ( Math.floor( Math.random() * 3 ) === 1 ) {
+        if ( this.windSpeed > 0 ) {
+          this.windSpeed += Math.floor( Math.random() * 10 );
+        } else {
+          this.windSpeed -= Math.floor( Math.random() * 10 );
+        }
+      }
+    }
+
+    Wind.prototype.create = function () {
+      if ( this.windSpeed !== 0 ) {
+        this.windLine = this.windSpeed * 3 * ( APP_WIDTH / 320 );
+        this.context.strokeStyle = 'rgb( 245, 11, 11 )';
+        this.context.beginPath();
+        this.context.moveTo( APP_WIDTH / 2, APP_HEIGHT - 5 );
+        this.context.lineTo( APP_WIDTH / 2 + this.windLine, APP_HEIGHT - 5 );
+        if ( this.windSpeed > 0 ) {
+          this.arrowDir = -2;
+        } else {
+          this.arrowDir = 2;
+        }
+        this.context.moveTo( APP_WIDTH / 2 + this.windLine, APP_HEIGHT - 5 );
+        this.context.lineTo( APP_WIDTH / 2 + this.windLine + this.arrowDir, APP_HEIGHT - 5 - 2 );
+        this.context.moveTo( APP_WIDTH / 2 + this.windLine, APP_HEIGHT - 5 );
+        this.context.lineTo( APP_WIDTH / 2 + this.windLine + this.arrowDir, APP_HEIGHT - 5 + 2 );
+        this.context.stroke();
+      }
+    };
+
+    return Wind;
 
   }());
 
@@ -368,8 +409,8 @@
       this.create( this.x, this.y );
     };
 
-    Gorilla.prototype.getBanana = function ( force, angle ) {
-      this.banana = new Banana( this.context, this.x, this.y - 17, force, angle );
+    Gorilla.prototype.getBanana = function ( force, angle, wind ) {
+      this.banana = new Banana( this.context, this.x, this.y - 17, force, angle, wind );
     };
 
     Gorilla.prototype.renderDead = function () {
@@ -390,26 +431,24 @@
 
     Gorilla.prototype.throwBanana = function ( time, justThrown ) {
 
-      // TODO: This needs to be fixed... At the moment, the down position does not clear out
-      if ( !this.justThrown ) {
-        if ( this.playerNumber === 2 && justThrown === true ) {
-          // Animate RIGHT Hand
-          if ( this.directionRight === 'up' ) {
-              this.animateArms( 'rightArm', [15, 7 * Math.PI / 4, Math.PI / 4, false], ( this.directionRight === 'down' ) ? 'up' : 'down' );
-          } else {
-              this.animateArms( 'rightArm', [5, 7 * Math.PI / 4, Math.PI / 4, false], ( this.directionRight === 'up' ) ? 'down' : 'up' );
-          }
-          // console.log( 'RIGHT Hand:', time, justThrown );
-        } else if ( justThrown === true ) {
-          // Animate LEFT Hand
-          if ( this.directionLeft === 'up' ) {
-              this.animateArms( 'leftArm', [15, 3 * Math.PI / 4, 5 * Math.PI / 4, false], ( this.directionLeft === 'down' ) ? 'up' : 'down' );
-          } else {
-              this.animateArms( 'leftArm', [5, 3 * Math.PI / 4, 5 * Math.PI / 4, false], ( this.directionLeft === 'up' ) ? 'down' : 'up' );
-          }
-          // console.log( 'LEFT Hand:', time, justThrown );
+      // Not sure if this is the cleanest way to do this but it works
+      // This will reset the direction for each arm so that we render it correctly
+      // During the "throw"
+      if ( this.timer < 1 ) {
+        this.animate = true;
+        if ( this.playerNumber === 1 ) {
+          this.directionRight = 'up';
+          this.directionLeft = 'down';
+        } else {
+          this.directionRight = 'down';
+          this.directionLeft = 'up';
         }
+
+        this.timer++;
+      } else {
+        this.animate = false;
       }
+
       // this.justThrown = ( justThrown ) ? true : false;
       this.banana.createFrame( time, this.playerNumber );
     };
@@ -434,7 +473,7 @@
   Banana = (function () {
 
     // Constructor
-    function Banana ( context, initx, inity, force, angle ) {
+    function Banana ( context, initx, inity, force, angle, wind ) {
       this.context = context;
       this.initx = initx;
       this.inity = inity;
@@ -446,7 +485,7 @@
       this.gravity = 9.8; // TODO: Make this something the user can change
       this.calcInitialPosition();
       this.startTime = 0;
-      this.wind = 15; // TODO: Make this dynamic
+      this.wind = wind;
       this.direction = 'up';
       this.timer = 0;
     }
@@ -482,7 +521,7 @@
     Banana.prototype.rotateBanana = function ( arc, direction ) {
       for ( var i = -5; i < -1; i++ ) {
         this.context.beginPath();
-        this.context.arc( this.x() + 1 + i , this.y() + 15, 3, arc[0], arc[1], arc[2] );
+        this.context.arc( this.x() + 1 + i , this.y(), 3, arc[0], arc[1], arc[2] );
         this.context.stroke();
       }
       if ( !(this.timer < 5) ) {
@@ -501,7 +540,7 @@
 
     Banana.prototype.calcInitialPosition = function () {
       var radian = this.angle * Math.PI / 180;
-      this.dx = this.force * Math.cos( radian );
+      this.dx = this.force * Math.cos( radian ) + this.wind;
       this.dy = this.force * Math.sin( radian ) - this.gravity * this.startTime;
     };
 
@@ -531,6 +570,7 @@
       };
       this.buildings = [];
       this.frameRate = 15; // Note, this may change
+      this.wind = new Wind( this.context );
     }
 
     App.prototype.createScene = function () {
@@ -540,11 +580,13 @@
         this.empty = false;
         this.createBuildings();
         this.createGorillas();
+        this.wind = new Wind( this.context );
       } else {
         this.reCreateBuildings();
         this.reCreateColissions();
         this.reCreateGorillas();
       }
+      this.wind.create();
       this.updateScore();
     };
 
@@ -619,7 +661,7 @@
         force = -force;
       }
       player = this['player_' + player];
-      player.getBanana( force, angle );
+      player.getBanana( force, angle, this.wind.windSpeed );
       this.timeout = setTimeout( function () {
         that.startTime = new Date();
         that.animateBanana( player, that.startTime );
@@ -729,6 +771,7 @@
 
     App.prototype.nextPlayerTurn = function ( player ) {
       this.sunShock = false;
+      player.timer = 0;
       var nextPlayer = ( player.playerNumber === 2 ) ? 1 : 2;
       window.showPlayerField( 'player_' + nextPlayer, 'angle' );
     };
