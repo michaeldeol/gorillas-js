@@ -3,6 +3,8 @@ gorillas-js
 
 JavaScript port of the classic ( Q B a s i c   G o r i l l a s )
 
+Updated to include RequireJS.
+
 ###example
 <http://michaeldeol.github.com/gorillas-js/>
 
