@@ -31,6 +31,13 @@ define(
       this.justThrown = false;
     }
 
+    /**
+     * create: Build the player out
+     * Depending on state, hands will be either down or up for throwing
+     * else, we display the player as dead.
+     * params {Integer} x
+     * params {Integer} y
+     */
     Gorilla.prototype.create = function ( x, y ) {
 
       if ( this.dead ) {
@@ -96,7 +103,6 @@ define(
         } else {
             this.animateArms( 'leftArm', [5, 3 * Math.PI / 4, 5 * Math.PI / 4, false], ( this.directionLeft === 'up' ) ? 'down' : 'up' );
         }
-
         if ( this.directionRight === 'up' ) {
             this.animateArms( 'rightArm', [15, 7 * Math.PI / 4, Math.PI / 4, false], ( this.directionRight === 'down' ) ? 'up' : 'down' );
         } else {
@@ -107,18 +113,24 @@ define(
         // default for now... both arms down
         for ( var i = -5; i < -1; i++ ) {
           this.context.strokeStyle = BODY_COLOR;
-          this.context.beginPath();
           // Left Arm
+          this.context.beginPath();
           this.context.arc( this.x + 1 + i , this.y + 15, 9, 3 * Math.PI / 4, 5 * Math.PI / 4, false );
           this.context.stroke();
-          this.context.beginPath();
           // Right Arm
+          this.context.beginPath();
           this.context.arc( this.x - 2 - i , this.y + 15, 9, 7 * Math.PI / 4, Math.PI / 4, false );
           this.context.stroke();
         }
       }
     };
 
+    /**
+     * animateArms: If we are dancing, lets pick the right arms to dance with
+     * params {String} arm Which arm do we want to control
+     * params {Array} arc Where to draw the arms
+     * params {String} direction
+     */
     Gorilla.prototype.animateArms = function ( arm, arc, direction ) {
       this.context.strokeStyle = BODY_COLOR;
       for ( var i = -5; i < -1; i++ ) {
@@ -137,31 +149,51 @@ define(
       if ( arm === 'rightArm' ) this.directionRight = direction;
     };
 
+    /**
+     * reCreate: Does what it says
+     */
     Gorilla.prototype.reCreate = function () {
       this.create( this.x, this.y );
     };
 
+    /**
+     * getBanana: create a new banana object
+     * params {Integer} force
+     * params {Integer} angle
+     * params {Object} wind
+     */
     Gorilla.prototype.getBanana = function ( force, angle, wind ) {
       this.banana = new Banana( this.context, this.x, this.y - 17, force, angle, wind );
     };
 
+    /**
+     * renderDead: Draw the Gorilla as dead
+     */
     Gorilla.prototype.renderDead = function () {
       this.context.fillStyle = 'rgb( 0, 0, 160 )';
       var shape = new Shape( this.context );
       shape.ellipse( this.x - this.width * 2, this.y, 2.5 * this.explosionWidth, this.explosionHeight );
     };
 
+    /**
+     * animateColission: Lets make the player appear to explode
+     */
     Gorilla.prototype.animateColission = function () {
+      var width, height, shape;
       this.context.fillStyle = 'rgb( 245, 11, 11 )';
       this.explosionWidth += 20;
       this.explosionHeight += 20;
-      var width = this.explosionWidth;
-      var height = this.explosionHeight;
-      var shape = new Shape( this.context );
+      width = this.explosionWidth;
+      height = this.explosionHeight;
+      shape = new Shape( this.context );
       shape.ellipse( this.x - this.width * 2, this.y, 2.5 * width, height );
     };
 
-    Gorilla.prototype.throwBanana = function ( time, justThrown ) {
+    /**
+     * throwBanana: Lets render the players arm up when throwing
+     * params {Integer} time
+     */
+    Gorilla.prototype.throwBanana = function ( time ) {
 
       // Not sure if this is the cleanest way to do this but it works
       // This will reset the direction for each arm so that we render it correctly
@@ -175,16 +207,19 @@ define(
           this.directionRight = 'down';
           this.directionLeft = 'up';
         }
-
         this.timer++;
       } else {
         this.animate = false;
       }
-
-      // this.justThrown = ( justThrown ) ? true : false;
       this.banana.createFrame( time, this.playerNumber );
     };
 
+    /**
+     * checkColission: See if player has been hit
+     * params {Integer} x
+     * params {Integer} y
+     * returns {Boolean}
+     */
     Gorilla.prototype.checkColission = function ( x, y ) {
       if ( this.y <= y && x > this.x - this.width / 2 && x < this.x + this.width / 2 ) {
         this.dead = true;
@@ -193,6 +228,9 @@ define(
       return false;
     };
 
+    /**
+     * animateWin: Lets animate
+     */
     Gorilla.prototype.animateWin = function () {
       // TODO: make sure gorilla does his dance
       this.animations++;

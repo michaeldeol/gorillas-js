@@ -9,7 +9,7 @@ define(
     // Constructor
     function Building ( context, canvasHeight ) {
       this.context = context;
-      this.canvasHeight = canvasHeight;
+      this.canvas = document.getElementById('canvas');
       this.width = 37 + Math.floor( Math.random() * 70 );
       this.baseHeight = 80;
       this.baseLine = 335;
@@ -22,22 +22,43 @@ define(
       this.colissions = [];
     }
 
+    /**
+     * positionAtX: Where are we at x
+     * returns {Integer}
+     */
     Building.prototype.positionAtX = function () {
       return this.x;
     };
 
+    /**
+     * positionAtY: Where are we at y
+     * returns {Integer}
+     */
     Building.prototype.positionAtY = function () {
-      return this.canvasHeight - this.height;
+      return this.canvas.height - this.height;
     };
 
+    /**
+     * endPosition: Where does this building end
+     * returns {Integer}
+     */
     Building.prototype.endPosition = function () {
       return this.positionAtX() + this.width + this.spacing;
     };
 
+    /**
+     * middlePosition: Locate the middle of the building
+     * returns {Integer}
+     */
     Building.prototype.middlePosition = function () {
       return this.positionAtX() + ( this.endPosition() - this.positionAtX() ) / 2;
     };
 
+    /**
+     * create: Build out the building
+     * params {Integer} x
+     * params {Integer} y
+     */
     Building.prototype.create = function ( x, y ) {
       this.x = x;
       this.y = y;
@@ -48,10 +69,19 @@ define(
       this.createWindows( this.positionAtX(), this.positionAtY() );
     };
 
+    /**
+     * reCreate: Re-Build the buildings
+     */
     Building.prototype.reCreate = function () {
       this.create( this.x, this.y );
     };
 
+    /**
+     * createWindows: Create as many windows as the building can hold based on it's size.
+     * If there is windows already for the recreate, lets use those instead.
+     * params {Integer} x
+     * params {Integer} y
+     */
     Building.prototype.createWindows = function ( x, y ) {
       var rows, windowsPerFloor, currentDistance, totalHeight, results, w, winLength, winRef, i;
       if ( this.windows.length > 0 ) {
@@ -73,11 +103,23 @@ define(
       }
     };
 
+    /**
+     * createWindow: Build the window
+     * params {Integer} x
+     * params {Integer} y
+     * params {String} color
+     */
     Building.prototype.createWindow = function ( x, y, color ) {
       this.context.fillStyle = color;
       this.context.fillRect( x, y, this.windowWidth, this.windowHeight );
     };
 
+    /**
+     * checkColission: Has the building been hit?
+     * params {Integer} x
+     * params {Integer} y
+     * returns {Boolean}
+     */
     Building.prototype.checkColission = function ( x, y ) {
       if ( this.positionAtY() - 25 <= y && ( x > this.x && x < this.x + this.width + 10 ) ) {
         this.colissions.push( [x - 20, y] );
@@ -87,6 +129,11 @@ define(
       return false;
     };
 
+    /**
+     * createColission: Draw colission if we hit the building
+     * params {Integer} x
+     * params {Integer} y
+     */
     Building.prototype.createColission = function ( x, y ) {
       var width, height, shape;
       width = 25;
@@ -96,6 +143,9 @@ define(
       shape.ellipse( x, y, width, height );
     };
 
+    /**
+     * reCreateColissions: On building reCreate, lets draw the colissions again
+     */
     Building.prototype.reCreateColissions = function () {
       if ( this.colissions.length > 0 ) {
         for ( var i = 0; i < this.colissions.length; i++ ) {

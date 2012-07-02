@@ -6,19 +6,24 @@ define(
   // Module + passing of dependencies (if any)
   function ( Shape ) {
 
-    var SUN_BODY_COLOR, SUN_EYES_COLOR,
-        SUN_BODY_COLOR = "rgb( 255, 255, 0 )",
+    // Constants
+    var SUN_BODY_COLOR = "rgb( 255, 255, 0 )",
         SUN_EYES_COLOR = "rgb( 0, 0, 160 )";
 
     // Constructor
     function Sun ( context ) {
       this.context = context;
+      this.canvas = document.getElementById('canvas');
       this.mouth = false;
       this.width = 10;
       this.height = 27;
-      this.position = ( APP_WIDTH / 2 );
+      this.position = ( this.canvas.width / 2 );
     }
 
+    /**
+     * create: Begin sun build-out
+     * params {Boolean} hit
+     */
     Sun.prototype.create = function ( hit ) {
       if ( hit ) this.mouth = true;
       this.createRays();
@@ -27,36 +32,33 @@ define(
       this.createMouth();
     };
 
+    /**
+     * createBody: Build the sun's body
+     */
     Sun.prototype.createBody = function () {
-
-      // create shape for use with body
       var shape = new Shape( this.context );
-
-      // TODO: See if we should extract this or leave it here
       this.context.fillStyle = SUN_BODY_COLOR;
-
-      // create body shape
       shape.circle( this.position, this.height, this.width );
-
     };
 
+    /**
+     * createEyes: Build left/right eye(s)
+     */
     Sun.prototype.createEyes = function () {
-
-      // create shape for use with eyes
       var shape = new Shape( this.context );
-
-      // TODO: See if we should extract this or leave it here
       this.context.fillStyle = SUN_EYES_COLOR;
-
       // create left eye
       shape.circle( this.position - 2.5, this.height - 2.5, 1 );
-
       // create right eye
       shape.circle( this.position + 2.5, this.height - 2.5, 1 );
-
     };
 
+    /**
+     * createRays: Build sun rays
+     */
     Sun.prototype.createRays = function () {
+      // Helper Method
+      // TODO: may extract this
       function createRay ( a ) {
         this.context.moveTo( this.position, this.height );
         return this.context.lineTo( this.position + 20 * Math.cos(a), this.height + 20 * Math.sin(a) );
@@ -70,6 +72,9 @@ define(
       this.context.stroke();
     };
 
+    /**
+     * createMouth: Build out the mouth in the smile or shocked state
+     */
     Sun.prototype.createMouth = function () {
       this.context.fillStyle = SUN_BODY_COLOR;
       this.context.strokeStyle = SUN_EYES_COLOR;

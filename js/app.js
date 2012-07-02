@@ -6,15 +6,22 @@ requirejs(
   // Module + passing of dependencies (if any)
   function ( App ) {
 
-    var app = new App();
+    // Variable setup
+    var app, p1angle, p1velocity, p2angle, p2velocity;
+
+    app = new App();
     app.createScene();
 
-    var p1angle = document.getElementById( 'player_1_angle' );
-    var p1velocity = document.getElementById( 'player_1_velocity' );
+    // Player 1 Information
+    p1angle = document.getElementById( 'player_1_angle' );
+    p1velocity = document.getElementById( 'player_1_velocity' );
 
-    var p2angle = document.getElementById( 'player_2_angle' );
-    var p2velocity = document.getElementById( 'player_2_velocity' );
+    // Player 2 Information
+    p2angle = document.getElementById( 'player_2_angle' );
+    p2velocity = document.getElementById( 'player_2_velocity' );
 
+    // TODO: clean this up and validate user input
+    // Attach event listeners to player(s) info
     p1angle.addEventListener( "keydown", function ( event ) {
       if ( event.keyCode === 13 ) {
         app.clearTimeouts();
@@ -50,6 +57,7 @@ requirejs(
       }
     });
 
+    // Initial page load styling / cleanup
     p1angle.style.display = 'block';
     p1angle.previousElementSibling.style.display = 'block';
     p1angle.focus();
@@ -59,39 +67,33 @@ requirejs(
     p2velocity.style.display = 'none';
     p2velocity.previousElementSibling.style.display = 'none';
 
+    // Global app functions
+    // TODO: find a better solution for these
+    // May create an event module to listen / fire events
+    window.hidePlayerField = function ( player, field ) {
+      var el = document.getElementById( player + '_' + field );
+      el.style.display = "none";
+      el.previousElementSibling.style.display = "none";
+    }
+
+    window.showPlayerField = function ( player, field ) {
+      var el = document.getElementById( player + '_' + field );
+      el.style.display = "block";
+      el.previousElementSibling.style.display = "block";
+      el.focus();
+    }
+
+    window.readAngleAndVelocity = function ( player ) {
+      return {
+        angle: document.getElementById( player + '_angle' ).value,
+        velocity: document.getElementById( player + '_velocity' ).value
+      };
+    }
+
+    window.clearFields = function ( player ) {
+      document.getElementById( player + '_angle' ).value = '';
+      document.getElementById( player + '_velocity' ).value = '';
+    }
+
 });
 
-/**
- * TODO: Remove Globals
- * This section should be wraped into a window.load event
- */
-
-// CONSTANSTS
-var APP_WIDTH   = 640,
-    APP_HEIGHT  = 350;
-
-
-window.hidePlayerField = function ( player, field ) {
-  var el = document.getElementById( player + '_' + field );
-  el.style.display = "none";
-  el.previousElementSibling.style.display = "none";
-}
-
-window.showPlayerField = function ( player, field ) {
-  var el = document.getElementById( player + '_' + field );
-  el.style.display = "block";
-  el.previousElementSibling.style.display = "block";
-  el.focus();
-}
-
-window.readAngleAndVelocity = function ( player ) {
-  return {
-    angle: document.getElementById( player + '_angle' ).value,
-    velocity: document.getElementById( player + '_velocity' ).value
-  };
-}
-
-window.clearFields = function ( player ) {
-  document.getElementById( player + '_angle' ).value = '';
-  document.getElementById( player + '_velocity' ).value = '';
-}

@@ -8,19 +8,40 @@ define(
     // Constructor
     function Shape ( context ) {
       this.context = context;
+      this.canvas = document.getElementById('canvas');
     }
 
+    /**
+     * circle: Creates basic circles
+     * params {Integer} x
+     * params {Integer} y
+     * params {Integer} width Width of circle
+     */
     Shape.prototype.circle = function ( x, y, width ) {
       this.context.beginPath();
       this.context.arc( x, y, width, 0, Math.PI * 2, true );
       this.context.closePath();
-      return this.context.fill();
+      this.context.fill();
     };
 
+    /**
+     * rectangle: Builds basic rectangle
+     * params {Integer} x
+     * params {Integer} y
+     * params {Integer} w Width
+     * params {Integer} h Height
+     */
     Shape.prototype.rectangle = function ( x, y, w, h ) {
       this.context.fillRect( x, y, w, h );
     };
 
+    /**
+     * ellipse: Builds an ellipse
+     * params {Integer} x
+     * params {Integer} y
+     * params {Integer} w Width
+     * params {Integer} h Height
+     */
     Shape.prototype.ellipse = function ( x, y, w, h ) {
       var kappa, ox, oy, xe, ye, xm, ym;
       kappa = 0.5522848;

@@ -23,14 +23,26 @@ define(
       this.timer = 0;
     }
 
+    /**
+     * x: Where are we at x
+     * returns {Integer}
+     */
     Banana.prototype.x = function () {
       return this.initx + this.projectionX;
     };
 
+    /**
+     * y: Where are we at y
+     * returns {Integer}
+     */
     Banana.prototype.y = function () {
       return this.inity - this.projectionY;
     };
 
+    /**
+     * create: Build the banana and rotate it based on previous position.
+     * params {Integer} player Which player this banana is associated with
+     */
     Banana.prototype.create = function ( player ) {
       this.context.fillStyle = 'rgb( 255, 255, 0 )';
       this.context.strokeStyle = 'rgb( 255, 255, 0 )';
@@ -51,6 +63,11 @@ define(
       }
     };
 
+    /**
+     * rotateBanana: Draw the banana based on it's direction
+     * params {Array} arc Arc directions
+     * params {String} direction
+     */
     Banana.prototype.rotateBanana = function ( arc, direction ) {
       for ( var i = -5; i < -1; i++ ) {
         this.context.beginPath();
@@ -65,18 +82,29 @@ define(
       }
     };
 
+    /**
+     * createFrame: create the starting position for launch
+     * params {Integer} time
+     * params {Integer} player
+     */
     Banana.prototype.createFrame = function ( time, player ) {
       this.startTime = time;
       this.create( player );
       this.calcProjection();
     };
 
+    /**
+     * calcInitialPosition: Setup the initial position and where the banana will go based on wind && gravity
+     */
     Banana.prototype.calcInitialPosition = function () {
       var radian = this.angle * Math.PI / 180;
       this.dx = this.force * Math.cos( radian ) + this.wind;
       this.dy = this.force * Math.sin( radian ) - this.gravity * this.startTime;
     };
 
+    /**
+     * calcProjection: calculate where the next frame should render this banana
+     */
     Banana.prototype.calcProjection = function () {
       this.calcInitialPosition();
       this.projectionX += this.dx * this.scale;
