@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <title>Gorillas.js</title>
+  <link href="styles/base.css" type="text/css" rel="stylesheet"></link>
+  <script data-main="js/app.js" src="js/require.js"></script>
+  </head>
+  <body>
+    <div id="container">
+      <div class="players">
+        <div id="player_1">
+          Player 1
+          <br/>
+          <label for="player_1_angle">Angle:</label>
+          <input id="player_1_angle" maxlength="3">
+          <br/>
+          <label for="player_1_velocity">Velocity:</label>
+          <input id="player_1_velocity" maxlength="3">
+        </div>
+        <div id="player_2">
+          Player 2
+          <br/>
+          <label for="player_2_angle">Angle:</label>
+          <input id="player_2_angle" maxlength="3">
+          <br/>
+          <label for="player_2_velocity">Velocity:</label>
+          <input id="player_2_velocity" maxlength="3">
+        </div>
+      </div>
+      <canvas id="canvas" width="640" height="350">
+        <p>Browser does not support the canvas tag</p>
+      </canvas>
+    </div>
+  </body>
+</html>
